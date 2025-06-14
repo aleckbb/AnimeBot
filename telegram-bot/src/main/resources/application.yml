@@ -1,0 +1,7 @@
+bot:
+  name: "KryanikAnimeBot"
+  token: "8152862564:AAE5oau36xVBYHvxE86bLGuF8dAGbdyv6Ak"
+
+spring:
+  application:
+    name: telegram-bot
