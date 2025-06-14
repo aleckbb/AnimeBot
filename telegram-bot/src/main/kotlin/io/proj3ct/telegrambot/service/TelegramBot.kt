@@ -12,24 +12,17 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 @Component
-open class TelegramBot : TelegramLongPollingBot() {
+class TelegramBot : TelegramLongPollingBot() {
 
     private lateinit var botProperties: BotProperties
-
-    //    private lateinit var animeService: AnimeService
+    private lateinit var messageService: MessageService
     private val logger = LoggerFactory.getLogger("Bot")
 
     @Autowired
-    fun TelegramBot(botProperties: BotProperties) {
+    fun TelegramBot(botProperties: BotProperties, messageService: MessageService) {
         this.botProperties = botProperties
-
-        val commands: MutableList<BotCommand> = ArrayList()
-        commands.add(BotCommand("/start", "начать общение"))
-        commands.add(BotCommand("/recommendations", "порекомендовать аниме"))
-        commands.add(BotCommand("/details", "получить информацию об аниме"))
-        commands.add(BotCommand("/subscribe", "уведомлять о выходе новых серий"))
-        commands.add(BotCommand("/unsubscribe", "не уведомлять о новых сериях"))
-        commands.add(BotCommand("/commands", "получить список доступных команд"))
+        this.messageService = messageService
+        val commands: List<BotCommand> = Commands.entries.map { BotCommand(it.command, it.description) }
         try {
             execute(SetMyCommands(commands, BotCommandScopeDefault(), null))
         } catch (e: TelegramApiException) {
@@ -41,11 +34,27 @@ open class TelegramBot : TelegramLongPollingBot() {
 
     override fun getBotUsername() = botProperties.name
 
-    override fun onUpdateReceived(p0: Update?) {
+    override fun onUpdateReceived(update: Update) {
         try {
-//            execute(animeService.processUpdate(update))
+
+            when {
+                update.hasCallbackQuery() ->
+                    execute(messageService.processCallbackQuery(update.callbackQuery))
+
+                update.hasMessage() && update.message.hasText() ->
+                    execute(messageService.processMessage(update.message))
+            }
         } catch (e: TelegramApiException) {
             logger.error("Ошибка при ответе пользователю!")
         }
+    }
+
+    enum class Commands(val command: String, val description: String) {
+        START("/start", "начать общение"),
+        RECOMMENDATIONS("/recommendations", "порекомендовать аниме"),
+        DETAILS("/details", "получить информацию об аниме"),
+        SUBSCRIBE("/subscribe", "уведомлять о выходе новых серий"),
+        UNSUBSCRIBE("/unsubscribe", "не уведомлять о новых сериях"),
+        COMMANDS("/commands", "получить список доступных команд")
     }
 }
