@@ -36,7 +36,6 @@ class TelegramBot : TelegramLongPollingBot() {
 
     override fun onUpdateReceived(update: Update) {
         try {
-
             when {
                 update.hasCallbackQuery() ->
                     execute(messageService.processCallbackQuery(update.callbackQuery))
