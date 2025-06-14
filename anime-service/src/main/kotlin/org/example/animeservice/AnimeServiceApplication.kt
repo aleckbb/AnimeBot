@@ -1,11 +1,11 @@
-package org.example.animebot
+package org.example.animeservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class AnimeBotApplication
+class AnimeServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<AnimeBotApplication>(*args)
+    runApplication<AnimeServiceApplication>(*args)
 }

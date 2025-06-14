@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: animeDb
+    ports:
+      - "5432:5432"
+
+  migrations:
+    image: liquibase/liquibase:4.28.0
+    volumes:
+      - ./migrations/liquibase:/liquibase/changelog
+    depends_on:
+      - postgres
+    command: >
+      --url=jdbc:postgresql://postgres:5432/animeDb
+      --username=postgres
+      --password=postgres
+      --changeLogFile=master.yaml
+      update
