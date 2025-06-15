@@ -1,10 +1,14 @@
 package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.AnimeDto
+import org.example.animeservice.providers.AnimeProvider
+import org.example.animeservice.repositories.AnimeUserIds
 import org.springframework.stereotype.Service
 
 @Service
-class AnimeServiceImpl : AnimeService {
+class AnimeServiceImpl(
+    val animeProvider: AnimeProvider
+) : AnimeService {
 
     override fun getDetailsById(id: Long): AnimeDto? = null
 
@@ -35,4 +39,8 @@ class AnimeServiceImpl : AnimeService {
     override fun searchBySubscribed(chatId: Long): List<AnimeDto> = emptyList()
 
     override fun getRecommendations(chatId: Long, additionalText: String): List<AnimeDto> = emptyList()
+
+    fun findAnimeWithNewEpisodes(): List<AnimeUserIds> {
+        return animeProvider.findAnimeAndSubsWithNewEpisodes()
+    }
 }

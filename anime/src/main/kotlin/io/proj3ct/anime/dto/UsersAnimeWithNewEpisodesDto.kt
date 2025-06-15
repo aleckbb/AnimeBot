@@ -1,6 +1,6 @@
 package io.proj3ct.anime.dto
 
-class UsersAnimeWithNewEpisodesDto (
-    val chatId: Long,
-    val animes: List<String>
+data class UsersAnimeWithNewEpisodesDto(
+    val userId: Long,
+    val animeTitles: List<String>
 )
