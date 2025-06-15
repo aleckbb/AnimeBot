@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 @Component
 class ShikimoriWebClient(
-    private val shikimoriWebClient: WebClient
+    private val shikimoriClient: WebClient
 ) {
 
     /**
@@ -18,7 +18,7 @@ class ShikimoriWebClient(
      */
     suspend fun getAnimeInfo(id: Long): AnimeJson? {
         return try {
-            shikimoriWebClient.get()
+            shikimoriClient.get()
                 .uri("/{id}", id)
                 .retrieve()
                 .awaitBody<AnimeJson>()
@@ -40,7 +40,7 @@ class ShikimoriWebClient(
         page: Int = 1
     ): List<AnimeCompactJson> {
         return try {
-            shikimoriWebClient.get()
+            shikimoriClient.get()
                 .uri { uriBuilder ->
                     uriBuilder
                         .queryParam("search", query)

@@ -13,28 +13,26 @@ class TelegramBotWebClient(
 
     fun notifyUsersAboutNewEpisodes(
         userEpisodes: List<UsersAnimeWithNewEpisodesDto>
-    ): Boolean {
-        return try {
+    ) {
+        try {
             telegramBotClient.post()
                 .uri("/notify-new-episodes")
                 .bodyValue(userEpisodes)
                 .retrieve()
                 .toBodilessEntity()
                 .map { it.statusCode.is2xxSuccessful }
-                .block() ?: false
+                .block()
         } catch (e: WebClientResponseException) {
             log.error(
                 "Ошибка при уведомлении /notify-new-episodes: " +
                         "${e.rawStatusCode} ${e.responseBodyAsString}", e
             )
-            false
         } catch (e: Exception) {
             log.error("Неожиданная ошибка в notifyUsersAboutNewEpisodes", e)
-            false
         }
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(ShikimoriWebClient::class.java)
+        private val log = LoggerFactory.getLogger(TelegramBotWebClient::class.java)
     }
 }
