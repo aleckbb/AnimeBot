@@ -16,6 +16,6 @@ class WebClientConfig {
     @Bean
     fun telegramBotClient(builder: WebClient.Builder): WebClient =
         builder
-            .baseUrl("http://localhost:8081")
+            .baseUrl("http://localhost:8081/api/telegram-bot")
             .build()
 }

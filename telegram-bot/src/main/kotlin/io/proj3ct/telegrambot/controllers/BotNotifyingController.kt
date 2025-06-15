@@ -1,4 +1,4 @@
-package io.proj3ct.telegrambot
+package io.proj3ct.telegrambot.controllers
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import io.proj3ct.telegrambot.service.TelegramBot
