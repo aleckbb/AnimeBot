@@ -52,20 +52,20 @@ class TelegramBot : TelegramLongPollingBot() {
 
     fun notifyUsersAboutNewEpisodes(userEpisodes: List<UsersAnimeWithNewEpisodesDto>) {
         userEpisodes.forEach { ue ->
-            val text = if (ue.animes.isEmpty()) {
+            val text = if (ue.animeTitles.isEmpty()) {
                 "Нет новых серий"
             } else buildString {
                 append("Новые серии для следующих аниме:\n")
-                ue.animes.forEach { anime ->
+                ue.animeTitles.forEach { anime ->
                     append("• ${anime}\n")
                 }
             }
             try {
-                val msg = SendMessage(ue.chatId.toString(), text)
+                val msg = SendMessage(ue.userId.toString(), text)
                 execute(msg)
-                logger.info("Notified chat ${ue.chatId} with ${ue.animes.size} anime entries")
+                logger.info("Notified chat ${ue.userId} with ${ue.animeTitles.size} anime entries")
             } catch (e: TelegramApiException) {
-                logger.error("Не удалось отправить уведомление chat=${ue.chatId}", e)
+                logger.error("Не удалось отправить уведомление chat=${ue.userId}", e)
             }
         }
     }
