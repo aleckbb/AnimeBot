@@ -1,7 +1,7 @@
 package org.example.animeservice.converters
 
+import io.proj3ct.anime.dto.AnimeDto
 import org.example.animeservice.entities.AnimeEntity
-import org.example.animeservice.models.dto.AnimeDto
 import org.example.animeservice.models.json.AnimeJson
 import org.springframework.stereotype.Component
 

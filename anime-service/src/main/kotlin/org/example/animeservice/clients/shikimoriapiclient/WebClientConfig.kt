@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfig {
 
     @Bean
-    fun shikimoriWebClient(builder: WebClient.Builder): WebClient =
+    fun shikimoriClient(builder: WebClient.Builder): WebClient =
         builder
             .baseUrl("https://shikimori.one/api/animes")
             .build()
