@@ -1,10 +1,12 @@
 package org.example.animeservice.providers
 
+import io.proj3ct.anime.dto.AnimeDto
+import jakarta.transaction.Transactional
 import org.example.animeservice.converters.AnimeConverter
-import org.example.animeservice.models.dto.AnimeDto
-import org.example.animeservice.models.json.AnimeJson
+import org.example.animeservice.repositories.AnimeUserIds
 import org.example.animeservice.repositories.AnimeRepository
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class AnimeProvider(
@@ -12,7 +14,13 @@ class AnimeProvider(
     private val animeConverter: AnimeConverter
 ) {
 
+    @Transactional
     fun save(animeDto: AnimeDto) {
         animeRepository.save(animeConverter.toEntity(animeDto))
+    }
+
+    @Transactional
+    fun findAnimeAndSubsWithNewEpisodes(): List<AnimeUserIds> {
+        return animeRepository.findTitleAndSubsByNextEpisodeAt(LocalDateTime.now())
     }
 }

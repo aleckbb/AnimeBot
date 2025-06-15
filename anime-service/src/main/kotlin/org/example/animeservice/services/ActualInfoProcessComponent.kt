@@ -15,12 +15,8 @@ class ActualInfoProcessComponent(
 ) {
 
     @Async
-    fun updateAnimeInfo(animeId: Int) = runBlocking {
-        try {
-            val anime = client.getAnimeInfo(animeId).let { animeConverter.toDto(it) }
-            animeProvider.save(anime)
-        } catch (e: Exception) {
-
-        }
+    fun updateAnimeInfo(animeId: Long) = runBlocking {
+        val anime = client.getAnimeInfo(animeId).let { animeConverter.toDto(it) }
+        animeProvider.save(anime)
     }
 }

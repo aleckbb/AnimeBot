@@ -1,9 +1,6 @@
 package org.example.animeservice.entities
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.math.BigDecimal
@@ -68,4 +65,12 @@ open class AnimeEntity(
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "studios", columnDefinition = "text[]")
     open var studios: List<String>? = null
+
+    @ElementCollection
+    @CollectionTable(
+        name = "subscription",
+        joinColumns = [JoinColumn(name = "anime_id")]
+    )
+    @Column(name = "user_id")
+    open var userIds: Set<Long> = mutableSetOf()
 }

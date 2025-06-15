@@ -12,4 +12,10 @@ class WebClientConfig {
         builder
             .baseUrl("https://shikimori.one/api/animes")
             .build()
+
+    @Bean
+    fun telegramBotClient(builder: WebClient.Builder): WebClient =
+        builder
+            .baseUrl("http://localhost:8081")
+            .build()
 }
