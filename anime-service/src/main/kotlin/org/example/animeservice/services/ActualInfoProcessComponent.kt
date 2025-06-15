@@ -16,7 +16,9 @@ class ActualInfoProcessComponent(
 
     @Async
     fun updateAnimeInfo(animeId: Long) = runBlocking {
-        val anime = client.getAnimeInfo(animeId).let { animeConverter.toDto(it) }
-        animeProvider.save(anime)
+        val anime = client.getAnimeInfo(animeId)?.let { animeConverter.toDto(it) }
+        if (anime != null) {
+            animeProvider.save(anime)
+        }
     }
 }
