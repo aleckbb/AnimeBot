@@ -1,27 +1,46 @@
 package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.AnimeDto
+import org.example.animeservice.providers.AnimeProvider
+import org.example.animeservice.repositories.AnimeUserIds
+import org.springframework.stereotype.Service
 
+@Service
+class AnimeService(
+    val animeProvider: AnimeProvider
+) {
 
-/**
- * Сервис‑заглушка. Пока что возвращает пустые данные, чтобы
- * приложение могло компилироваться и интеграционные точки
- * Telegram‑бота работали без ошибок.
- */
-interface AnimeService {
-    fun getDetailsById(id: Long): AnimeDto?
-    fun subscribe(chatId: Long, animeId: Long): Boolean
-    fun unsubscribe(chatId: Long, animeId: Long): Boolean
+    fun getDetailsById(id: Long): AnimeDto? = null
 
-    fun updateKind(chatId: Long, kind: String)
-    fun updateGenre(chatId: Long, genre: String)
-    fun updateStatus(chatId: Long, status: String)
+    fun subscribe(chatId: Long, animeId: Long): Boolean = false
 
-    fun findAllKinds(): List<String>
-    fun findAllGenres(): List<String>
-    fun findAllStatuses(): List<String>
+    fun unsubscribe(chatId: Long, animeId: Long): Boolean = false
 
-    fun searchByTitle(query: String): List<AnimeDto>
-    fun searchBySubscribed(chatId: Long): List<AnimeDto>
-    fun getRecommendations(chatId: Long, additionalText: String = ""): List<AnimeDto>
+    fun updateKind(chatId: Long, kind: String) {
+        // пока ничего
+    }
+
+    fun updateGenre(chatId: Long, genre: String) {
+        // пока ничего
+    }
+
+    fun updateStatus(chatId: Long, status: String) {
+        // пока ничего
+    }
+
+    fun findAllKinds(): List<String> = emptyList()
+
+    fun findAllGenres(): List<String> = emptyList()
+
+    fun findAllStatuses(): List<String> = emptyList()
+
+    fun searchByTitle(query: String): List<AnimeDto> = emptyList()
+
+    fun searchBySubscribed(chatId: Long): List<AnimeDto> = emptyList()
+
+    fun getRecommendations(chatId: Long, additionalText: String): List<AnimeDto> = emptyList()
+
+    fun findAnimeWithNewEpisodes(): List<AnimeUserIds> {
+        return animeProvider.findAnimeAndSubsWithNewEpisodes()
+    }
 }

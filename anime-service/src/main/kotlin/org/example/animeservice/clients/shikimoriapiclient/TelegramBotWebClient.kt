@@ -35,6 +35,6 @@ class TelegramBotWebClient(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(ShikimoriWebClient::class.java)
+        private val log = LoggerFactory.getLogger(TelegramBotWebClient::class.java)
     }
 }

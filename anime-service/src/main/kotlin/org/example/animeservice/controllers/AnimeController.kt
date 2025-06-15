@@ -88,8 +88,8 @@ class AnimeController @Autowired constructor(
 
     /** Поиск по названию */
     @GetMapping("/search")
-    fun searchByTitle(@RequestParam q: String): ResponseEntity<List<AnimeDto>> =
-        ResponseEntity.ok(animeService.searchByTitle(q))
+    fun searchByTitle(@RequestParam title: String): ResponseEntity<List<AnimeDto>> =
+        ResponseEntity.ok(animeService.searchByTitle(title))
 
     /** Список подписок пользователя */
     @GetMapping("/subscribed/{chatId}")

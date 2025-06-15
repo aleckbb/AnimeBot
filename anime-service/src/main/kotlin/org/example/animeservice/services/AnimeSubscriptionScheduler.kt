@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 class AnimeSubscriptionScheduler(
     private val actualInfoProcessComponent: ActualInfoProcessComponent,
     private val telegramBotComponent: TelegramBotComponent,
-    private val animeService: AnimeServiceImpl,
+    private val animeService: AnimeService,
 ) {
 
     @Scheduled(cron = "\${app.schedule.cron}")

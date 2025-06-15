@@ -1,6 +1,17 @@
 spring:
   application:
     name: anime-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/animedb
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 app:
   schedule:
