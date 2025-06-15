@@ -1,6 +1,6 @@
 package org.example.animeservice.controllers
 
-import org.example.animeservice.dto.AnimeDto
+import io.proj3ct.anime.dto.AnimeDto
 import org.example.animeservice.services.AnimeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -98,6 +98,6 @@ class AnimeController @Autowired constructor(
 
     /** Рекомендации для пользователя */
     @GetMapping("/recommendations/{chatId}")
-    fun getRecommendations(@PathVariable chatId: Long): ResponseEntity<List<AnimeDto>> =
-        ResponseEntity.ok(animeService.getRecommendations(chatId))
+    fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<List<AnimeDto>> =
+        ResponseEntity.ok(animeService.getRecommendations(chatId, additionalText))
 }

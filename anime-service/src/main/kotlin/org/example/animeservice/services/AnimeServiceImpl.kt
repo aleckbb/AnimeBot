@@ -1,6 +1,6 @@
 package org.example.animeservice.services
 
-import org.example.animeservice.dto.AnimeDto
+import io.proj3ct.anime.dto.AnimeDto
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,5 +34,5 @@ class AnimeServiceImpl : AnimeService {
 
     override fun searchBySubscribed(chatId: Long): List<AnimeDto> = emptyList()
 
-    override fun getRecommendations(chatId: Long): List<AnimeDto> = emptyList()
+    override fun getRecommendations(chatId: Long, additionalText: String): List<AnimeDto> = emptyList()
 }

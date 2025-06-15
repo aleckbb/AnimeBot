@@ -1,4 +1,4 @@
-package org.example.animeservice.dto
+package io.proj3ct.anime.dto
 
 
 class AnimeDto(

@@ -1,6 +1,7 @@
 package org.example.animeservice.services
 
-import org.example.animeservice.dto.AnimeDto
+import io.proj3ct.anime.dto.AnimeDto
+
 
 /**
  * Сервис‑заглушка. Пока что возвращает пустые данные, чтобы
@@ -22,5 +23,5 @@ interface AnimeService {
 
     fun searchByTitle(query: String): List<AnimeDto>
     fun searchBySubscribed(chatId: Long): List<AnimeDto>
-    fun getRecommendations(chatId: Long): List<AnimeDto>
+    fun getRecommendations(chatId: Long, additionalText: String = ""): List<AnimeDto>
 }

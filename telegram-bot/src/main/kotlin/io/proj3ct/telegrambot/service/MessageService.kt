@@ -1,7 +1,10 @@
 package io.proj3ct.telegrambot.service
 
+import io.proj3ct.anime.dto.AnimeDto
+import io.proj3ct.telegrambot.clients.animeclient.AnimeControllerClient
 import io.proj3ct.telegrambot.service.TelegramBot.Commands
 import io.proj3ct.telegrambot.utils.BotAnswers
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
@@ -13,7 +16,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class MessageService {
+class MessageService @Autowired constructor(
+    private val animeService: AnimeControllerClient,
+){
 
     private val userStates = ConcurrentHashMap<Long, State>()
 
@@ -37,7 +42,7 @@ class MessageService {
                 val detailsText = animeService.getDetailsById(animeId)
                     ?: "Не удалось найти подробности"
 
-                createEditMessageText(callbackQuery, detailsText)
+                createEditMessageText(callbackQuery, "")
             }
 
             data.startsWith(State.WAITING_FOR_SUBSCRIBE.callbackData!!) -> {
@@ -59,7 +64,7 @@ class MessageService {
                 animeService.updateKind(chatId, kindName)
 
                 val genres: List<String> = animeService.findAllGenres()
-                val buttons = toButtons(genres, State.WAITING_FOR_GENRE.callbackData)
+                val buttons = stringsToButtons(genres, State.WAITING_FOR_GENRE.callbackData)
                 createEditMessageText(callbackQuery, "Выберите желаемый жанр", InlineKeyboardMarkup(buttons))
             }
 
@@ -68,7 +73,7 @@ class MessageService {
                 animeService.updateGenre(chatId, genreName)
 
                 val statuses: List<String> = animeService.findAllStatuses()
-                val buttons = toButtons(statuses, State.WAITING_FOR_STATUS.callbackData)
+                val buttons = stringsToButtons(statuses, State.WAITING_FOR_STATUS.callbackData)
                 createEditMessageText(callbackQuery, "Выберите желаемый статус", InlineKeyboardMarkup(buttons))
             }
 
@@ -76,15 +81,15 @@ class MessageService {
                 val statusName = data.removePrefix(State.WAITING_FOR_STATUS.callbackData)
                 animeService.updateStatus(chatId, statusName)
 
-                val buttons = toButtons(listOf("Да", "Нет"), State.WAITING_FOR_ADDITIONS.callbackData)
+                val buttons = stringsToButtons(listOf("Да", "Нет"), State.WAITING_FOR_ADDITIONS.callbackData)
                 createEditMessageText(callbackQuery, "Что-нибудь еще?", InlineKeyboardMarkup(buttons))
             }
 
             data.startsWith(State.WAITING_FOR_ADDITIONS.callbackData!!) -> {
                 val answer = data.removePrefix(State.WAITING_FOR_ADDITIONS.callbackData)
                 if (answer == "Нет") {
-                    val animeList: List<AnimeDto> = animeService.getRecomendations(chatId)
-                    val buttons = toButtons(animeList, data)
+                    val animeList: List<AnimeDto> = animeService.getRecommendations(chatId)
+                    val buttons = animeToButtons(animeList, data)
                     createEditMessageText(callbackQuery, "Вот список рекомендаций", InlineKeyboardMarkup(buttons))
                 } else {
                     userStates[chatId] = State.WAITING_FOR_ADDITIONS
@@ -112,28 +117,29 @@ class MessageService {
             State.WAITING_FOR_DETAILS -> {
                 userStates[chatId] = State.IDLE
                 val matches: List<AnimeDto> = animeService.searchByTitle(text)
-                createMessageWithButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
+                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
             }
 
             State.WAITING_FOR_SUBSCRIBE -> {
                 userStates[chatId] = State.IDLE
 
                 val matches: List<AnimeDto> = animeService.searchByTitle(text)
-                createMessageWithButtons(matches, chatId, State.WAITING_FOR_SUBSCRIBE.callbackData)
+                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_SUBSCRIBE.callbackData)
             }
 
             State.WAITING_FOR_UNSUBSCRIBE -> {
                 userStates[chatId] = State.IDLE
 
-                val matches: List<AnimeDto> = animeService.searchBySubscribed()
-                createMessageWithButtons(matches, chatId, State.WAITING_FOR_UNSUBSCRIBE.callbackData)
+                val matches: List<AnimeDto> = animeService.searchBySubscribed(chatId)
+                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_UNSUBSCRIBE.callbackData)
             }
 
             State.WAITING_FOR_ADDITIONS -> {
                 userStates[chatId] = State.IDLE
 
-                val matches: List<AnimeDto> = animeService.getRecomendations(chatId)
-                createMessageWithButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
+                val additionalText = text
+                val matches: List<AnimeDto> = animeService.getRecommendations(chatId, additionalText)
+                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
             }
             else -> handleCommand(chatId, "")
         }
@@ -179,11 +185,11 @@ class MessageService {
         }
     }
 
-    private fun createMessageWithButtons(matches: List<AnimeDto>, chatId: Long, callbackData: String?): SendMessage {
+    private fun createMessageWithAnimeButtons(matches: List<AnimeDto>, chatId: Long, callbackData: String?): SendMessage {
         if (matches.isEmpty()) {
             return createMessage(chatId, "Аниме не найдено.")
         }
-        val buttons = toButtons(matches, callbackData)
+        val buttons = animeToButtons(matches, callbackData)
         return createMessage(chatId, "Выберите аниме", InlineKeyboardMarkup(buttons))
 
     }
@@ -192,12 +198,12 @@ class MessageService {
         if (list.isEmpty()) {
             return createMessage(chatId, "Не найдено.")
         }
-        val buttons = toButtons(list, callbackData)
+        val buttons = stringsToButtons(list, callbackData)
         return createMessage(chatId, "Выберите нужный вариант", InlineKeyboardMarkup(buttons))
 
     }
 
-    private fun toButtons(animeList: List<AnimeDto>, callbackData: String? = "") = animeList.map { anime ->
+    private fun animeToButtons(animeList: List<AnimeDto>, callbackData: String? = "") = animeList.map { anime ->
         listOf(
             InlineKeyboardButton().apply {
                 this.text = anime.title
@@ -206,7 +212,7 @@ class MessageService {
         )
     }
 
-    private fun toButtons(list: List<String>, callbackData: String? = "") = list.map {
+    private fun stringsToButtons(list: List<String>, callbackData: String? = "") = list.map {
         listOf(
             InlineKeyboardButton().apply {
                 this.text = it
