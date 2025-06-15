@@ -4,7 +4,7 @@ import io.proj3ct.anime.dto.AnimeDto
 import io.proj3ct.telegrambot.clients.animeclient.AnimeControllerClient
 import io.proj3ct.telegrambot.service.TelegramBot.Commands
 import io.proj3ct.telegrambot.utils.BotAnswers
-import org.springframework.beans.factory.annotation.Autowired
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
@@ -16,10 +16,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class MessageService @Autowired constructor(
-    private val animeService: AnimeControllerClient,
-){
+class MessageService(private val animeService: AnimeControllerClient) {
 
+    private val logger = LoggerFactory.getLogger(MessageService::class.java)
     private val userStates = ConcurrentHashMap<Long, State>()
 
     private enum class State(val callbackData: String? = null) {
@@ -33,54 +32,57 @@ class MessageService @Autowired constructor(
         WAITING_FOR_ADDITIONS("ADDITIONS"),
     }
 
+    /* -------------------------------- callback part -------------------------------- */
     fun processCallbackQuery(callbackQuery: CallbackQuery): EditMessageText {
-        val data = callbackQuery.data
+        val data   = callbackQuery.data
         val chatId = callbackQuery.message.chatId
+        logger.info("[CB] Got callBackQuery: chat=$chatId data=$data")
+        logger.info("processCallbackQuery...")
+
         return when {
             data.startsWith(State.WAITING_FOR_DETAILS.callbackData!!) -> {
-                val animeId = data.removePrefix(State.WAITING_FOR_DETAILS.callbackData).toLong()
-                val detailsText = animeService.getDetailsById(animeId)
-                    ?: "Не удалось найти подробности"
-
-                createEditMessageText(callbackQuery, "")
+                val animeId    = data.removePrefix(State.WAITING_FOR_DETAILS.callbackData).toLong()
+                val details    = animeService.getDetailsById(animeId).also {
+                    logger.info("getDetailsById($animeId) -> $it")
+                } ?: "Не удалось найти подробности"
+                createEditMessageText(callbackQuery, details.toString())
             }
 
             data.startsWith(State.WAITING_FOR_SUBSCRIBE.callbackData!!) -> {
                 val animeId = data.removePrefix(State.WAITING_FOR_SUBSCRIBE.callbackData).toLong()
-                val ok = animeService.subscribe(chatId, animeId)
-
+                val ok      = animeService.subscribe(chatId, animeId).also {
+                    logger.info("subscribe(chat=$chatId, anime=$animeId) -> $it")
+                }
                 createEditMessageText(callbackQuery, if (ok) BotAnswers.SUBSCRIBED else BotAnswers.SUBSCRIBE_FAIL)
             }
 
             data.startsWith(State.WAITING_FOR_UNSUBSCRIBE.callbackData!!) -> {
                 val animeId = data.removePrefix(State.WAITING_FOR_UNSUBSCRIBE.callbackData).toLong()
-                val ok = animeService.unsubscribe(chatId, animeId)
-
+                val ok      = animeService.unsubscribe(chatId, animeId).also {
+                    logger.info("unsubscribe(chat=$chatId, anime=$animeId) -> $it")
+                }
                 createEditMessageText(callbackQuery, if (ok) BotAnswers.UNSUBSCRIBED else BotAnswers.UNSUBSCRIBE_FAIL)
             }
 
             data.startsWith(State.WAITING_FOR_KIND.callbackData!!) -> {
-                val kindName = data.removePrefix(State.WAITING_FOR_KIND.callbackData)
-                animeService.updateKind(chatId, kindName)
-
-                val genres: List<String> = animeService.findAllGenres()
+                val kind = data.removePrefix(State.WAITING_FOR_KIND.callbackData)
+                animeService.updateKind(chatId, kind).also { logger.info("updateKind(chat=$chatId, kind=$kind)") }
+                val genres = animeService.findAllGenres().also { logger.info("findAllGenres() -> $it") }
                 val buttons = stringsToButtons(genres, State.WAITING_FOR_GENRE.callbackData)
                 createEditMessageText(callbackQuery, "Выберите желаемый жанр", InlineKeyboardMarkup(buttons))
             }
 
             data.startsWith(State.WAITING_FOR_GENRE.callbackData!!) -> {
-                val genreName = data.removePrefix(State.WAITING_FOR_GENRE.callbackData)
-                animeService.updateGenre(chatId, genreName)
-
-                val statuses: List<String> = animeService.findAllStatuses()
+                val genre = data.removePrefix(State.WAITING_FOR_GENRE.callbackData)
+                animeService.updateGenre(chatId, genre).also { logger.info("updateGenre(chat=$chatId, genre=$genre)") }
+                val statuses = animeService.findAllStatuses().also { logger.info("findAllStatuses() -> $it") }
                 val buttons = stringsToButtons(statuses, State.WAITING_FOR_STATUS.callbackData)
                 createEditMessageText(callbackQuery, "Выберите желаемый статус", InlineKeyboardMarkup(buttons))
             }
 
             data.startsWith(State.WAITING_FOR_STATUS.callbackData!!) -> {
-                val statusName = data.removePrefix(State.WAITING_FOR_STATUS.callbackData)
-                animeService.updateStatus(chatId, statusName)
-
+                val status = data.removePrefix(State.WAITING_FOR_STATUS.callbackData)
+                animeService.updateStatus(chatId, status).also { logger.info("updateStatus(chat=$chatId, status=$status)") }
                 val buttons = stringsToButtons(listOf("Да", "Нет"), State.WAITING_FOR_ADDITIONS.callbackData)
                 createEditMessageText(callbackQuery, "Что-нибудь еще?", InlineKeyboardMarkup(buttons))
             }
@@ -88,103 +90,90 @@ class MessageService @Autowired constructor(
             data.startsWith(State.WAITING_FOR_ADDITIONS.callbackData!!) -> {
                 val answer = data.removePrefix(State.WAITING_FOR_ADDITIONS.callbackData)
                 if (answer == "Нет") {
-                    val animeList: List<AnimeDto> = animeService.getRecommendations(chatId)
-                    val buttons = animeToButtons(animeList, data)
+                    val recs = animeService.getRecommendations(chatId).also { logger.info("getRecommendations(chat=$chatId) -> ${it.size} items") }
+                    val buttons = animeToButtons(recs, State.WAITING_FOR_DETAILS.callbackData)
                     createEditMessageText(callbackQuery, "Вот список рекомендаций", InlineKeyboardMarkup(buttons))
                 } else {
-                    userStates[chatId] = State.WAITING_FOR_ADDITIONS
+                    userStates[chatId] = State.WAITING_FOR_ADDITIONS.also { logger.info("State -> $it for chat $chatId") }
                     createEditMessageText(callbackQuery, "Напишите что-нибудь еще")
                 }
             }
 
-            else -> {
-                createEditMessageText(
-                    callbackQuery,
-                    "Неизвестное действие"
-                )
-            }
+            else -> createEditMessageText(callbackQuery, "Неизвестное действие")
         }
     }
 
+    /* -------------------------------- message part -------------------------------- */
     fun processMessage(message: Message): SendMessage {
         val chatId = message.chatId
-        val text = message.text.trim()
-        val state = userStates.getOrDefault(chatId, State.IDLE)
+        val text   = message.text.trim()
+        val state  = userStates.getOrDefault(chatId, State.IDLE)
+        logger.info("[MSG] Got message: chat=$chatId, text=$text")
+        logger.info("processMessage: state=$state...")
 
         return when (state) {
             State.IDLE -> handleCommand(chatId, text)
 
             State.WAITING_FOR_DETAILS -> {
-                userStates[chatId] = State.IDLE
-                val matches: List<AnimeDto> = animeService.searchByTitle(text)
+                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+                val matches = animeService.searchByTitle(text).also { logger.info("searchByTitle('$text') -> ${it.size} items") }
                 createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
             }
 
             State.WAITING_FOR_SUBSCRIBE -> {
-                userStates[chatId] = State.IDLE
-
-                val matches: List<AnimeDto> = animeService.searchByTitle(text)
+                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+                val matches = animeService.searchByTitle(text).also { logger.info("searchByTitle('$text') -> ${it.size} items") }
                 createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_SUBSCRIBE.callbackData)
             }
 
             State.WAITING_FOR_UNSUBSCRIBE -> {
-                userStates[chatId] = State.IDLE
-
-                val matches: List<AnimeDto> = animeService.searchBySubscribed(chatId)
+                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+                val matches = animeService.searchBySubscribed(chatId).also { logger.info("searchBySubscribed(chat=$chatId) -> ${it.size} items") }
                 createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_UNSUBSCRIBE.callbackData)
             }
 
             State.WAITING_FOR_ADDITIONS -> {
-                userStates[chatId] = State.IDLE
-
-                val additionalText = text
-                val matches: List<AnimeDto> = animeService.getRecommendations(chatId, additionalText)
-                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_DETAILS.callbackData)
+                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+                val recs = animeService.getRecommendations(chatId, text).also { logger.info("getRecommendations(chat=$chatId, add='$text') -> ${it.size} items") }
+                createMessageWithAnimeButtons(recs, chatId, State.WAITING_FOR_DETAILS.callbackData)
             }
+
             else -> handleCommand(chatId, "")
         }
     }
 
+    /* -------------------------------- command handler -------------------------------- */
     private fun handleCommand(chatId: Long, command: String): SendMessage {
+        logger.info("handleCommand: chat=$chatId, cmd='$command'")
         return when (command) {
-            Commands.START.command -> {
-                createMessage(chatId, BotAnswers.START_MESSAGE)
-            }
+            Commands.START.command -> createMessage(chatId, BotAnswers.START_MESSAGE)
 
-            // Запросить название аниме, а потом вызвать метод у animeService чтобы отправить сообщение с описанием аниме
             Commands.DETAILS.command -> {
-                userStates[chatId] = State.WAITING_FOR_DETAILS
+                userStates[chatId] = State.WAITING_FOR_DETAILS.also { logger.info("State -> $it for chat $chatId") }
                 createMessage(chatId, BotAnswers.ASK_ANIME_TITLE)
             }
 
-            // Запросить название аниме, а потом вызвать метод у animeService для подписки
             Commands.SUBSCRIBE.command -> {
-                userStates[chatId] = State.WAITING_FOR_SUBSCRIBE
+                userStates[chatId] = State.WAITING_FOR_SUBSCRIBE.also { logger.info("State -> $it for chat $chatId") }
                 createMessage(chatId, BotAnswers.ASK_SUBSCRIBE_TITLE)
             }
 
-            // Получить от animeService список из названий всех аниме на которые есть подписки у данного клиента и потом высветить этот список под сообщением в меню
             Commands.UNSUBSCRIBE.command -> {
-                userStates[chatId] = State.WAITING_FOR_UNSUBSCRIBE
+                userStates[chatId] = State.WAITING_FOR_UNSUBSCRIBE.also { logger.info("State -> $it for chat $chatId") }
                 createMessage(chatId, BotAnswers.ASK_UNSUBSCRIBE_TITLE)
             }
 
-            // Вывести сообщение в котором бот спрашивает о типе аниме (сериал/фильм), а затем вызывает метод у animeService с полученной информацией
             Commands.RECOMMENDATIONS.command -> {
-                val kinds: List<String> = animeService.findAllKinds()
+                val kinds = animeService.findAllKinds().also { logger.info("findAllKinds() -> $it") }
                 createMessageWithButtons(kinds, chatId, State.WAITING_FOR_KIND.callbackData)
             }
 
-            Commands.COMMANDS.command -> {
-                createMessage(chatId, BotAnswers.COMMANDS_INFO_MESSAGE)
-            }
+            Commands.COMMANDS.command -> createMessage(chatId, BotAnswers.COMMANDS_INFO_MESSAGE)
 
-            else -> {
-                createMessage(chatId, BotAnswers.UNKNOWN_COMMAND)
-            }
+            else -> createMessage(chatId, BotAnswers.UNKNOWN_COMMAND)
         }
     }
-
+    
     private fun createMessageWithAnimeButtons(matches: List<AnimeDto>, chatId: Long, callbackData: String?): SendMessage {
         if (matches.isEmpty()) {
             return createMessage(chatId, "Аниме не найдено.")
