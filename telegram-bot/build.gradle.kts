@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":anime"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -33,6 +34,11 @@ dependencies {
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // (необязательно) если планируете писать корутинный WebClient:
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
 }
 

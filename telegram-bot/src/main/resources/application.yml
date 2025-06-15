@@ -5,3 +5,6 @@ bot:
 spring:
   application:
     name: telegram-bot
+
+server:
+  port: 8081
