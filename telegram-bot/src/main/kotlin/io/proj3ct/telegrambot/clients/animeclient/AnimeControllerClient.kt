@@ -89,7 +89,7 @@ class AnimeControllerClient(
 
     fun searchByTitle(query: String): List<AnimeDto> =
         webClient.get()
-            .uri("/search?q={q}", query)
+            .uri("/search?title={title}", query)
             .retrieve()
             .bodyToFlux(AnimeDto::class.java)
             .collectList()
