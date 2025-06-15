@@ -126,12 +126,6 @@ class MessageService(private val animeService: AnimeControllerClient) {
                 createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_SUBSCRIBE.callbackData)
             }
 
-            State.WAITING_FOR_UNSUBSCRIBE -> {
-                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
-                val matches = animeService.searchBySubscribed(chatId).also { logger.info("searchBySubscribed(chat=$chatId) -> ${it.size} items") }
-                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_UNSUBSCRIBE.callbackData)
-            }
-
             State.WAITING_FOR_ADDITIONS -> {
                 userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
                 val recs = animeService.getRecommendations(chatId, text).also { logger.info("getRecommendations(chat=$chatId, add='$text') -> ${it.size} items") }
@@ -159,8 +153,9 @@ class MessageService(private val animeService: AnimeControllerClient) {
             }
 
             Commands.UNSUBSCRIBE.command -> {
-                userStates[chatId] = State.WAITING_FOR_UNSUBSCRIBE.also { logger.info("State -> $it for chat $chatId") }
-                createMessage(chatId, BotAnswers.ASK_UNSUBSCRIBE_TITLE)
+                userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+                val matches = animeService.searchBySubscribed(chatId).also { logger.info("searchBySubscribed(chat=$chatId) -> ${it.size} items") }
+                createMessageWithAnimeButtons(matches, chatId, State.WAITING_FOR_UNSUBSCRIBE.callbackData)
             }
 
             Commands.RECOMMENDATIONS.command -> {
