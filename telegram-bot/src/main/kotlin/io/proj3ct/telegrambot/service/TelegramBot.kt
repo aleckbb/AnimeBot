@@ -57,7 +57,7 @@ class TelegramBot : TelegramLongPollingBot() {
             } else buildString {
                 append("Новые серии для следующих аниме:\n")
                 ue.animes.forEach { anime ->
-                    append("• ${anime.title}\n")
+                    append("• ${anime}\n")
                 }
             }
             try {
