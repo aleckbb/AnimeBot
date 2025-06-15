@@ -4,9 +4,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: animeDb
+      POSTGRES_DB: animedb
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   migrations:
     image: liquibase/liquibase:4.28.0
@@ -15,8 +15,8 @@ services:
     depends_on:
       - postgres
     command: >
-      --url=jdbc:postgresql://postgres:5432/animeDb
+      --url=jdbc:postgresql://postgres:5432/animedb
       --username=postgres
       --password=postgres
-      --changeLogFile=master.yaml
+      --changeLogFile=changelog/master.yml
       update

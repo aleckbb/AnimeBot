@@ -18,7 +18,7 @@ create table if not exists anime(
     description TEXT,
     next_episode_at TIMESTAMPTZ,
     genres TEXT[],
-    studious TEXT[]
+    studios TEXT[]
 );
 
 create table if not exists subscription(
