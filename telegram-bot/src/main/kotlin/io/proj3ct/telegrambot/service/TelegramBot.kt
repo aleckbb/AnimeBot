@@ -1,11 +1,13 @@
 package io.proj3ct.telegrambot.service
 
+import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import io.proj3ct.telegrambot.config.BotProperties
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
@@ -45,6 +47,26 @@ class TelegramBot : TelegramLongPollingBot() {
             }
         } catch (e: TelegramApiException) {
             logger.error("Ошибка при ответе пользователю!")
+        }
+    }
+
+    fun notifyUsersAboutNewEpisodes(userEpisodes: List<UsersAnimeWithNewEpisodesDto>) {
+        userEpisodes.forEach { ue ->
+            val text = if (ue.animes.isEmpty()) {
+                "Нет новых серий"
+            } else buildString {
+                append("Новые серии для следующих аниме:\n")
+                ue.animes.forEach { anime ->
+                    append("• ${anime.title}\n")
+                }
+            }
+            try {
+                val msg = SendMessage(ue.chatId.toString(), text)
+                execute(msg)
+                logger.info("Notified chat ${ue.chatId} with ${ue.animes.size} anime entries")
+            } catch (e: TelegramApiException) {
+                logger.error("Не удалось отправить уведомление chat=${ue.chatId}", e)
+            }
         }
     }
 
