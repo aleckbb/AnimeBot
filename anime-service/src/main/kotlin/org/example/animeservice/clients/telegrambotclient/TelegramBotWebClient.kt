@@ -1,4 +1,4 @@
-package org.example.animeservice.clients.shikimoriapiclient
+package org.example.animeservice.clients.telegrambotclient
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import org.slf4j.LoggerFactory

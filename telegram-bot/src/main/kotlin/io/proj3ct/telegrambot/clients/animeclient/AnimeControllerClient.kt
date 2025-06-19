@@ -1,6 +1,7 @@
 package io.proj3ct.telegrambot.clients.animeclient
 
 import io.proj3ct.anime.dto.AnimeDto
+import io.proj3ct.anime.dto.AnimeNameDto
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -95,11 +96,11 @@ class AnimeControllerClient(
             .collectList()
             .block() ?: emptyList()
 
-    fun searchBySubscribed(chatId: Long): List<AnimeDto> =
+    fun searchBySubscribed(chatId: Long): List<AnimeNameDto> =
         webClient.get()
             .uri("/subscribed/{chatId}", chatId)
             .retrieve()
-            .bodyToFlux(AnimeDto::class.java)
+            .bodyToFlux(AnimeNameDto::class.java)
             .collectList()
             .block() ?: emptyList()
 

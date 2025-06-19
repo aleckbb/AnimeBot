@@ -36,7 +36,7 @@ class ShikimoriWebClient(
      */
     suspend fun searchAnime(
         query: String,
-        limit: Int = 20,
+        limit: Int = 10,
         page: Int = 1
     ): List<AnimeCompactJson> {
         return try {

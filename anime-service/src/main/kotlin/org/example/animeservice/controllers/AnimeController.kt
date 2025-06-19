@@ -1,7 +1,11 @@
 package org.example.animeservice.controllers
 
 import io.proj3ct.anime.dto.AnimeDto
+import io.proj3ct.anime.dto.AnimeNameDto
+import org.example.animeservice.services.AiRecommendationService
 import org.example.animeservice.services.AnimeService
+import org.example.animeservice.services.SubscriptionService
+import org.example.animeservice.services.UserPreferencesService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,15 +13,16 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/anime")
 class AnimeController @Autowired constructor(
-    private val animeService: AnimeService
+    private val animeService: AnimeService,
+    private val subscriptionService: SubscriptionService,
+    private val aiRecommendationService: AiRecommendationService,
+    private val userPreferencesService: UserPreferencesService
 ) {
 
     /** Детали по ID */
     @GetMapping("/{id}")
     fun getDetailsById(@PathVariable id: Long): ResponseEntity<AnimeDto> =
-        animeService.getDetailsById(id)
-            ?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.notFound().build()
+        animeService.getDetailsById(id).let { ResponseEntity.ok(it) }
 
     /** Подписка на аниме */
     @PostMapping("/{id}/subscribe")
@@ -25,7 +30,7 @@ class AnimeController @Autowired constructor(
         @PathVariable id: Long,
         @RequestParam chatId: Long
     ): ResponseEntity<Unit> =
-        if (animeService.subscribe(chatId, id))
+        if (subscriptionService.subscribe(chatId, id))
             ResponseEntity.ok().build()
         else
             ResponseEntity.badRequest().build()
@@ -36,7 +41,7 @@ class AnimeController @Autowired constructor(
         @PathVariable id: Long,
         @RequestParam chatId: Long
     ): ResponseEntity<Unit> =
-        if (animeService.unsubscribe(chatId, id))
+        if (subscriptionService.unsubscribe(chatId, id))
             ResponseEntity.ok().build()
         else
             ResponseEntity.badRequest().build()
@@ -47,7 +52,7 @@ class AnimeController @Autowired constructor(
         @PathVariable chatId: Long,
         @RequestParam kind: String
     ): ResponseEntity<Unit> {
-        animeService.updateKind(chatId, kind)
+        userPreferencesService.updateKind(chatId, kind)
         return ResponseEntity.noContent().build()
     }
 
@@ -57,7 +62,7 @@ class AnimeController @Autowired constructor(
         @PathVariable chatId: Long,
         @RequestParam genre: String
     ): ResponseEntity<Unit> {
-        animeService.updateGenre(chatId, genre)
+        userPreferencesService.updateGenre(chatId, genre)
         return ResponseEntity.noContent().build()
     }
 
@@ -67,7 +72,7 @@ class AnimeController @Autowired constructor(
         @PathVariable chatId: Long,
         @RequestParam status: String
     ): ResponseEntity<Unit> {
-        animeService.updateStatus(chatId, status)
+        userPreferencesService.updateStatus(chatId, status)
         return ResponseEntity.noContent().build()
     }
 
@@ -88,16 +93,17 @@ class AnimeController @Autowired constructor(
 
     /** Поиск по названию */
     @GetMapping("/search")
-    fun searchByTitle(@RequestParam title: String): ResponseEntity<List<AnimeDto>> =
+    fun searchByTitle(@RequestParam title: String): ResponseEntity<List<AnimeNameDto>> =
         ResponseEntity.ok(animeService.searchByTitle(title))
 
     /** Список подписок пользователя */
     @GetMapping("/subscribed/{chatId}")
-    fun searchBySubscribed(@PathVariable chatId: Long): ResponseEntity<List<AnimeDto>> =
-        ResponseEntity.ok(animeService.searchBySubscribed(chatId))
+    fun searchBySubscribed(@PathVariable chatId: Long): ResponseEntity<List<AnimeNameDto>> =
+        ResponseEntity.ok(subscriptionService.searchBySubscribed(chatId))
 
     /** Рекомендации для пользователя */
     @GetMapping("/recommendations/{chatId}")
     fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<List<AnimeDto>> =
-        ResponseEntity.ok(animeService.getRecommendations(chatId, additionalText))
+        TODO("Реализовать aiRecommendationService")
+        //ResponseEntity.ok(aiRecommendationService.getRecommendations(chatId, additionalText))
 }
