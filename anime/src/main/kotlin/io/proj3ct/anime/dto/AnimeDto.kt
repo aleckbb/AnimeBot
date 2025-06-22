@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 
-class AnimeDto(
+data class AnimeDto(
     val id: Long,
     val name: String,
     val russian: String,

@@ -3,6 +3,7 @@ package io.proj3ct.telegrambot.service
 import io.proj3ct.anime.dto.AnimeNameDto
 import io.proj3ct.telegrambot.clients.animeclient.AnimeControllerClient
 import io.proj3ct.telegrambot.mapper.toAnimeNameDto
+import io.proj3ct.telegrambot.mapper.toFullStringInfo
 import io.proj3ct.telegrambot.service.TelegramBot.Commands
 import io.proj3ct.telegrambot.utils.BotAnswers
 import org.slf4j.LoggerFactory
@@ -44,9 +45,9 @@ class MessageService(private val animeService: AnimeControllerClient) {
             data.startsWith(State.WAITING_FOR_DETAILS.callbackData!!) -> {
                 val animeId = data.removePrefix(State.WAITING_FOR_DETAILS.callbackData).toLong()
                 val details = animeService.getDetailsById(animeId).also {
-                    logger.info("getDetailsById($animeId) -> $it")
-                } ?: "Не удалось найти подробности"
-                createEditMessageText(callbackQuery, details.toString())
+                                logger.info("getDetailsById($animeId) -> $it")
+                            }?.toFullStringInfo() ?: "Не удалось найти подробности"
+                createEditMessageText(callbackQuery, details)
             }
 
             data.startsWith(State.WAITING_FOR_SUBSCRIBE.callbackData!!) -> {
