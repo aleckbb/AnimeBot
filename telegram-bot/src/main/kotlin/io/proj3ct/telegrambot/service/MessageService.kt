@@ -208,7 +208,7 @@ class MessageService(private val animeService: AnimeControllerClient) {
         listOf(
             InlineKeyboardButton().apply {
                 this.text = anime.name
-                this.callbackData = callbackData + "_${anime.id}"
+                this.callbackData = callbackData + "${anime.id}"
             }
         )
     }
@@ -217,7 +217,7 @@ class MessageService(private val animeService: AnimeControllerClient) {
         listOf(
             InlineKeyboardButton().apply {
                 this.text = it
-                this.callbackData = callbackData + "_${it}"
+                this.callbackData = callbackData + "${it}"
             }
         )
     }
