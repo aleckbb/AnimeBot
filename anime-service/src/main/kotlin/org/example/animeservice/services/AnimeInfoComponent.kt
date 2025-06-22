@@ -28,7 +28,6 @@ class AnimeInfoComponent(
     }
 
     private fun getTitle(anime: AnimeCompactJson): String {
-        return if(anime.russian.isEmpty()) anime.russian
-        else anime.name
+        return anime.russian.ifEmpty { anime.name }
     }
 }

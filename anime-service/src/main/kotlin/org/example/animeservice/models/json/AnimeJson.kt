@@ -1,5 +1,6 @@
 package org.example.animeservice.models.json
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -28,6 +29,7 @@ data class AnimeJson(
     val description: String?,
 
     @JsonProperty(value = "next_episode_at")
+    @field:JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     val nextEpisodeAt: LocalDateTime?,
     val genres: List<Genre>?,
     val studios: List<Studio>?
