@@ -1,5 +1,6 @@
 package org.example.animeservice.models.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -13,12 +14,20 @@ data class AnimeJson(
     val score: BigDecimal,
     val status: String,
     val episodes: Int,
+
+    @JsonProperty(value = "episodes_aired")
     val episodesAired: Int,
+
+    @JsonProperty(value = "aired_on")
     val airedOn: LocalDate,
+
+    @JsonProperty(value = "released_on")
     val releasedOn: LocalDate?,
     val rating: String?,
     val duration: Int?,
     val description: String?,
+
+    @JsonProperty(value = "next_episode_at")
     val nextEpisodeAt: LocalDateTime?,
     val genres: List<Genre>?,
     val studios: List<Studio>?
