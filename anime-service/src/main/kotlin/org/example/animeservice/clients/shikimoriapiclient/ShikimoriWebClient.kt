@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.reactive.function.client.bodyToFlux
 
 @Component
 class ShikimoriWebClient(
@@ -49,7 +50,7 @@ class ShikimoriWebClient(
                         .build()
                 }
                 .retrieve()
-                .awaitBody()
+                .awaitBody<List<AnimeCompactJson>>()
         } catch (e: WebClientResponseException) {
             log.error("Ошибка при поиске anime?search=$query: ${e.rawStatusCode}", e)
             emptyList()

@@ -2,6 +2,8 @@ package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.AnimeNameDto
 import jakarta.transaction.Transactional
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.example.animeservice.entities.SubscriptionEntity
 import org.example.animeservice.repositories.SubscriptionRepository
 import org.springframework.stereotype.Service
@@ -18,14 +20,18 @@ class SubscriptionService(
      * Возвращает true, если подписка была создана, false если уже существует.
      */
     @Transactional
-    fun subscribe(userId: Long, animeId: Long): Boolean {
-        if (subscriptionRepository.existsByUserIdAndAnimeId(userId, animeId)) {
+    suspend fun subscribe(userId: Long, animeId: Long): Boolean {
+        if (withContext(Dispatchers.IO) {
+                subscriptionRepository.existsByUserIdAndAnimeId(userId, animeId)
+            }) {
             return false
         }
         if (!animeService.existsAnime(animeId)) {
             animeInfoComponent.updateAnimeInfo(animeId)
         }
-        subscriptionRepository.save(SubscriptionEntity(userId, animeId))
+        withContext(Dispatchers.IO) {
+            subscriptionRepository.save(SubscriptionEntity(userId, animeId))
+        }
         return true
     }
 

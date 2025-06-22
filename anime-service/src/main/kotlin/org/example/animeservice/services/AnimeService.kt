@@ -2,6 +2,8 @@ package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.AnimeDto
 import io.proj3ct.anime.dto.AnimeNameDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.example.animeservice.providers.AnimeProvider
 import org.example.animeservice.repositories.projections.AnimeUserIds
 import org.springframework.stereotype.Service
@@ -20,9 +22,11 @@ class AnimeService(
         return animeProvider.existsAnime(id)
     }
 
-    fun getDetailsById(id: Long): AnimeDto {
+    suspend fun getDetailsById(id: Long): AnimeDto {
         return if (existsAnime(id)) {
-            animeProvider.getDetailsById(id)
+            withContext(Dispatchers.IO) {
+                animeProvider.getDetailsById(id)
+            }
         } else {
             animeInfoComponent.updateAnimeInfo(id)
         }
@@ -40,7 +44,7 @@ class AnimeService(
         return animeProvider.findAllStatuses()
     }
 
-    fun searchByTitle(query: String): List<AnimeNameDto> {
+    suspend fun searchByTitle(query: String): List<AnimeNameDto> {
         return animeInfoComponent.searchAnime(query)
     }
 
