@@ -88,11 +88,11 @@ class AnimeControllerClient(
 
     /* ---------- Поиск и рекомендации ---------- */
 
-    fun searchByTitle(query: String): List<AnimeDto> =
+    fun searchByTitle(query: String): List<AnimeNameDto> =
         webClient.get()
             .uri("/search?title={title}", query)
             .retrieve()
-            .bodyToFlux(AnimeDto::class.java)
+            .bodyToFlux(AnimeNameDto::class.java)
             .collectList()
             .block() ?: emptyList()
 
