@@ -27,7 +27,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.ai:spring-ai-starter-model-openai")
 
     runtimeOnly("org.postgresql:postgresql")
 
@@ -44,10 +43,4 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.ai:spring-ai-bom:1.0.0")
-    }
 }
