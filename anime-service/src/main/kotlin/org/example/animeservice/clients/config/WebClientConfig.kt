@@ -1,4 +1,4 @@
-package org.example.animeservice.clients.shikimoriapiclient
+package org.example.animeservice.clients.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

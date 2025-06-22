@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class AnimeSubscriptionScheduler(
-    private val actualInfoProcessComponent: ActualInfoProcessComponent,
+    private val animeInfoComponent: AnimeInfoComponent,
     private val telegramBotComponent: TelegramBotComponent,
     private val animeService: AnimeService,
 ) {
@@ -29,7 +29,7 @@ class AnimeSubscriptionScheduler(
                 }
             telegramBotComponent.notifyUsersAboutNewEpisodes(userAnimeList)
             animeTitles.forEach {
-                actualInfoProcessComponent.updateAnimeInfo(it.getId())
+                animeInfoComponent.updateAnimeInfo(it.getId())
             }
         }
     }
