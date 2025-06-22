@@ -10,7 +10,7 @@ private fun getTitle(anime: AnimeDto): String {
 }
 
 fun AnimeDto.toFullStringInfo() = buildString {
-    appendLine("🎬 *${russian}* (${name})")
+    appendLine("🎬 ${russian} (${name})")
     appendLine("• Тип: $kind")
     appendLine("• Статус: $status")
     appendLine("• Серии: $episodes")
@@ -26,7 +26,14 @@ fun AnimeDto.toFullStringInfo() = buildString {
     appendLine("• Студии: ${studios?.joinToString(", ") ?: "—"}")
     appendLine()
     appendLine("Описание:")
-    appendLine(description?.takeIf { it.isNotBlank() } ?: "Нет описания")
+    appendLine(description?.takeIf { it.isNotBlank() } ?.cleanDescription() ?: "Нет описания")
     appendLine()
     appendLine("🔗 Ссылка: https://shikimori.one$url")
 }
+
+private fun String.cleanDescription(): String =
+    replace(Regex("""\[character=\d+](.*?)\[/character]"""), "$1")
+        .replace(Regex("""[ \t]{2,}"""), " ")
+        .lines()
+        .joinToString("\n") { it.trim() }
+        .trim()
