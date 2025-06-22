@@ -19,7 +19,7 @@ data class AnimeJson(
     val episodesAired: Int,
 
     @JsonProperty(value = "aired_on")
-    val airedOn: LocalDate,
+    val airedOn: LocalDate?,
 
     @JsonProperty(value = "released_on")
     val releasedOn: LocalDate?,

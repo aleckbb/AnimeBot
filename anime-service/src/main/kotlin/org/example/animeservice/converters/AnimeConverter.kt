@@ -62,9 +62,9 @@ class AnimeConverter {
             score = animeDto.score,
             status = animeDto.status,
             episodes = animeDto.episodes,
-            episodesAired = animeDto.episodesAired,
-            airedOn = animeDto.airedOn
+            episodesAired = animeDto.episodesAired
         ).apply {
+            airedOn = animeDto.airedOn
             releasedOn = animeDto.releasedOn
             rating = animeDto.rating
             duration = animeDto.duration

@@ -15,7 +15,7 @@ class AnimeDto(
     val status: String,
     val episodes: Int,
     val episodesAired: Int,
-    val airedOn: LocalDate,
+    val airedOn: LocalDate?,
     val releasedOn: LocalDate?,
     val rating: String?,
     val duration: Int?,

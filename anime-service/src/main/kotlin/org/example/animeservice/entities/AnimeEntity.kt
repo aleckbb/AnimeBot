@@ -37,11 +37,10 @@ open class AnimeEntity(
     open val episodes: Int,
 
     @Column(name = "episodes_aired", nullable = false)
-    open val episodesAired: Int,
-
-    @Column(name = "aired_on", nullable = false)
-    open val airedOn: LocalDate
+    open val episodesAired: Int
 ) {
+    @Column(name = "aired_on", nullable = false)
+    open var airedOn: LocalDate? = null
 
     @Column(name = "released_on")
     open var releasedOn: LocalDate? = null
