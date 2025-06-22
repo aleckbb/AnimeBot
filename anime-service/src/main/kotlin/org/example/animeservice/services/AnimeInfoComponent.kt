@@ -1,5 +1,6 @@
 package org.example.animeservice.services
 
+import io.proj3ct.anime.dto.AnimeDto
 import io.proj3ct.anime.dto.AnimeNameDto
 import kotlinx.coroutines.runBlocking
 import org.example.animeservice.clients.shikimoriapiclient.ShikimoriWebClient
@@ -16,17 +17,14 @@ class AnimeInfoComponent(
     private val animeConverter: AnimeConverter
 ) {
 
-    @Async
-    fun updateAnimeInfo(animeId: Long) = runBlocking {
-        client.getAnimeInfo(animeId)!!.let { animeConverter.toDto(it) }.apply {
-            animeProvider.save(this)
-        }
-    }
+    suspend fun updateAnimeInfo(animeId: Long): AnimeDto =
+        client.getAnimeInfo(animeId)!!
+            .let(animeConverter::toDto)
+            .also(animeProvider::save)
 
-    @Async
-    fun searchAnime(query: String) = runBlocking {
+    suspend fun searchAnime(query: String): List<AnimeNameDto> {
         val animeList = client.searchAnime(query).sortedBy { -it.score }
-        animeList.map { AnimeNameDto(it.id, getTitle(it)) }
+        return animeList.map { AnimeNameDto(it.id, getTitle(it)) }
     }
 
     private fun getTitle(anime: AnimeCompactJson): String {

@@ -41,3 +41,5 @@ create table if not exists ai_log(
     response TEXT,
     created_at TIMESTAMP
 );
+
+ALTER TABLE subscription ADD CONSTRAINT uk_user_anime UNIQUE (user_id, anime_id);

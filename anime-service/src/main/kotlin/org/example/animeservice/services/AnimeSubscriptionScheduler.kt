@@ -1,6 +1,7 @@
 package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
+import kotlinx.coroutines.runBlocking
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -12,7 +13,7 @@ class AnimeSubscriptionScheduler(
 ) {
 
     @Scheduled(cron = "\${app.schedule.cron}")
-    fun checkNewEpisodes() {
+    suspend fun checkNewEpisodes() {
         val animeTitles = animeService.findAnimeWithNewEpisodes()
         if (animeTitles.isEmpty()) {
             return;

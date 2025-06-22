@@ -21,12 +21,12 @@ class AnimeController @Autowired constructor(
 
     /** Детали по ID */
     @GetMapping("/{id}")
-    fun getDetailsById(@PathVariable id: Long): ResponseEntity<AnimeDto> =
+    suspend fun getDetailsById(@PathVariable id: Long): ResponseEntity<AnimeDto> =
         animeService.getDetailsById(id).let { ResponseEntity.ok(it) }
 
     /** Подписка на аниме */
     @PostMapping("/{id}/subscribe")
-    fun subscribe(
+    suspend fun subscribe(
         @PathVariable id: Long,
         @RequestParam chatId: Long
     ): ResponseEntity<Unit> =
@@ -93,7 +93,7 @@ class AnimeController @Autowired constructor(
 
     /** Поиск по названию */
     @GetMapping("/search")
-    fun searchByTitle(@RequestParam title: String): ResponseEntity<List<AnimeNameDto>> =
+    suspend fun searchByTitle(@RequestParam title: String): ResponseEntity<List<AnimeNameDto>> =
         ResponseEntity.ok(animeService.searchByTitle(title))
 
     /** Список подписок пользователя */
@@ -103,7 +103,7 @@ class AnimeController @Autowired constructor(
 
     /** Рекомендации для пользователя */
     @GetMapping("/recommendations/{chatId}")
-    fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<List<AnimeDto>> =
+    fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<List<AnimeNameDto>> =
         TODO("Реализовать aiRecommendationService")
         //ResponseEntity.ok(aiRecommendationService.getRecommendations(chatId, additionalText))
 }
