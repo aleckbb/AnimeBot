@@ -2,6 +2,7 @@ package io.proj3ct.telegrambot.clients.animeclient
 
 import io.proj3ct.anime.dto.AnimeDto
 import io.proj3ct.anime.dto.AnimeNameDto
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -66,24 +67,21 @@ class AnimeControllerClient(
         webClient.get()
             .uri("/kinds")
             .retrieve()
-            .bodyToFlux(String::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<String>>() {})
             .block() ?: emptyList()
 
     fun findAllGenres(): List<String> =
         webClient.get()
             .uri("/genres")
             .retrieve()
-            .bodyToFlux(String::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<String>>() {})
             .block() ?: emptyList()
 
     fun findAllStatuses(): List<String> =
         webClient.get()
             .uri("/statuses")
             .retrieve()
-            .bodyToFlux(String::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<String>>() {})
             .block() ?: emptyList()
 
     /* ---------- Поиск и рекомендации ---------- */
@@ -92,23 +90,20 @@ class AnimeControllerClient(
         webClient.get()
             .uri("/search?title={title}", query)
             .retrieve()
-            .bodyToFlux(AnimeNameDto::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<AnimeNameDto>>() {})
             .block() ?: emptyList()
 
     fun searchBySubscribed(chatId: Long): List<AnimeNameDto> =
         webClient.get()
             .uri("/subscribed/{chatId}", chatId)
             .retrieve()
-            .bodyToFlux(AnimeNameDto::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<AnimeNameDto>>() {})
             .block() ?: emptyList()
 
     fun getRecommendations(chatId: Long, additionalText: String? = ""): List<AnimeDto> =
         webClient.get()
             .uri("/recommendations/{chatId}", chatId, additionalText)
             .retrieve()
-            .bodyToFlux(AnimeDto::class.java)
-            .collectList()
+            .bodyToMono(object : ParameterizedTypeReference<List<AnimeDto>>() {})
             .block() ?: emptyList()
 }
