@@ -15,13 +15,13 @@ open class AnimeEntity(
     @Column(name = "id", nullable = false)
     open val id: Long,
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, columnDefinition = "text")
     open val name: String,
 
-    @Column(name = "russian", nullable = false)
+    @Column(name = "russian", nullable = false, columnDefinition = "text")
     open val russian: String,
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, columnDefinition = "text")
     open val url: String,
 
     @Column(name = "kind", nullable = false)
@@ -51,7 +51,7 @@ open class AnimeEntity(
     @Column(name = "duration")
     open var duration: Int? = null
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     open var description: String? = null
 
     @Column(name = "next_episode_at")
