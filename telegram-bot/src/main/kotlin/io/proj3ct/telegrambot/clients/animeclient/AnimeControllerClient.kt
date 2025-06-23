@@ -100,10 +100,10 @@ class AnimeControllerClient(
             .bodyToMono(object : ParameterizedTypeReference<List<AnimeNameDto>>() {})
             .block() ?: emptyList()
 
-    fun getRecommendations(chatId: Long, additionalText: String? = ""): List<AnimeDto> =
+    fun getRecommendations(chatId: Long, additionalText: String? = ""): String =
         webClient.get()
             .uri("/recommendations/{chatId}", chatId, additionalText)
             .retrieve()
-            .bodyToMono(object : ParameterizedTypeReference<List<AnimeDto>>() {})
-            .block() ?: emptyList()
+            .bodyToMono(String::class.java)
+            .block() ?: ""
 }
