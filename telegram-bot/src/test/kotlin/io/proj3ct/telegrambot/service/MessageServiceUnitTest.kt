@@ -8,6 +8,8 @@ import io.proj3ct.telegrambot.utils.TestData
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
@@ -21,14 +23,11 @@ import kotlin.test.assertTrue
 @ExtendWith(MockitoExtension::class)
 class MessageServiceUnitTest {
 
-    private lateinit var animeClient: AnimeControllerClient
-    private lateinit var svc: MessageService
+    @Mock
+    private lateinit var animeClient : AnimeControllerClient
 
-    @BeforeEach
-    fun setup() {
-        animeClient = Mockito.mock(AnimeControllerClient::class.java)
-        svc = MessageService(animeClient)
-    }
+    @InjectMocks
+    private lateinit var svc: MessageService
 
     private fun makeMessage(text: String): Message {
         val message = Message().apply { this.text = text }
