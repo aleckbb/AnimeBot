@@ -5,12 +5,10 @@ import io.proj3ct.telegrambot.mapper.toFullStringInfo
 import io.proj3ct.telegrambot.utils.AnimeMother
 import io.proj3ct.telegrambot.utils.BotAnswers
 import io.proj3ct.telegrambot.utils.TestData
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery
@@ -24,7 +22,7 @@ import kotlin.test.assertTrue
 class MessageServiceUnitTest {
 
     @Mock
-    private lateinit var animeClient : AnimeControllerClient
+    private lateinit var animeClient: AnimeControllerClient
 
     @InjectMocks
     private lateinit var svc: MessageService
