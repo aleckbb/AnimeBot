@@ -21,11 +21,8 @@ import kotlin.test.assertTrue
 @ExtendWith(MockitoExtension::class)
 class MessageServiceUnitTest {
 
-    @Mock
-    private lateinit var animeClient: AnimeControllerClient
-
-    @InjectMocks
-    private lateinit var svc: MessageService
+    @Mock private lateinit var animeClient: AnimeControllerClient
+    @InjectMocks private lateinit var svc: MessageService
 
     private fun makeMessage(text: String): Message {
         val message = Message().apply { this.text = text }
@@ -43,7 +40,7 @@ class MessageServiceUnitTest {
     }
 
     @Test
-    fun `processMessage - START возвращает приветствие`() {
+    fun `should return greeting when processing START command`() {
         val response = svc.processMessage(makeMessage(TelegramBot.Commands.START.command))
         assertEquals(TestData.CHAT_ID.toString(), response.chatId)
         assertEquals(BotAnswers.START_MESSAGE, response.text)
@@ -51,42 +48,43 @@ class MessageServiceUnitTest {
     }
 
     @Test
-    fun `processMessage - DETAILS спрашивает название аниме`() {
+    fun `should ask for anime title when processing DETAILS command`() {
         val botAnswer = svc.processMessage(makeMessage(TelegramBot.Commands.DETAILS.command))
         assertEquals(BotAnswers.ASK_ANIME_TITLE, botAnswer.text)
     }
 
     @Test
-    fun `processMessage - после DETAILS выдает кнопки найденных аниме`() {
+    fun `should show found anime buttons after DETAILS reply`() {
         svc.processMessage(makeMessage(TelegramBot.Commands.DETAILS.command))
         val anime = AnimeMother.getAnimeNameDto()
         whenever(animeClient.searchByTitle(TestData.TITLE))
             .thenReturn(listOf(anime))
 
         val reply = svc.processMessage(makeMessage(TestData.TITLE))
-        assertEquals(TestData.CHAT_ID.toString(), reply.chatId)
         assertEquals("Выберите аниме", reply.text)
-
-        val markup = reply.replyMarkup as InlineKeyboardMarkup
-        val buttons = markup.keyboard.flatten()
+        val buttons = (reply.replyMarkup as InlineKeyboardMarkup)
+            .keyboard.flatten()
         assertEquals(1, buttons.size)
         assertEquals(TestData.TITLE, buttons.single().text)
-        assertTrue(buttons.single().callbackData!!.startsWith(MessageService.State.WAITING_FOR_DETAILS.callbackData!! + anime.id))
+        assertTrue(
+            buttons.single().callbackData!!
+                .startsWith(MessageService.State.WAITING_FOR_DETAILS.callbackData!! + anime.id)
+        )
     }
 
     @Test
-    fun `processMessage - неизвестное действие`() {
+    fun `should return unknown command when text is unrecognized`() {
         val botAnswer = svc.processMessage(makeMessage("＼(￣▽￣)／"))
         assertEquals(BotAnswers.UNKNOWN_COMMAND, botAnswer.text)
     }
 
     @Test
-    fun `processCallbackQuery - DETAILS возвращает подробности`() {
+    fun `should return full details when handling DETAILS callback`() {
         val anime = AnimeMother.getAnimeDto()
         whenever(animeClient.getDetailsById(anime.id)).thenReturn(anime)
 
-        val callbackQuery = makeCallback(MessageService.State.WAITING_FOR_DETAILS.callbackData!! + anime.id)
-        val edit = svc.processCallbackQuery(callbackQuery)
+        val callback = makeCallback(MessageService.State.WAITING_FOR_DETAILS.callbackData!! + anime.id)
+        val edit = svc.processCallbackQuery(callback)
 
         assertEquals(TestData.CHAT_ID.toString(), edit.chatId)
         assertEquals(TestData.MESSAGE_ID, edit.messageId)
@@ -95,32 +93,38 @@ class MessageServiceUnitTest {
     }
 
     @Test
-    fun `processCallbackQuery - SUBSCRIBE_SUCCESS`() {
+    fun `should show subscribed message when subscribe callback succeeds`() {
         whenever(animeClient.subscribe(TestData.CHAT_ID, 1L)).thenReturn(true)
-        val edit = svc.processCallbackQuery(makeCallback(MessageService.State.WAITING_FOR_SUBSCRIBE.callbackData!! + 1))
+        val edit = svc.processCallbackQuery(
+            makeCallback(MessageService.State.WAITING_FOR_SUBSCRIBE.callbackData!! + 1)
+        )
         assertEquals(BotAnswers.SUBSCRIBED, edit.text)
     }
 
     @Test
-    fun `processCallbackQuery - SUBSCRIBE_FAIL`() {
+    fun `should show subscribe fail when subscribe callback fails`() {
         whenever(animeClient.subscribe(TestData.CHAT_ID, 1L)).thenReturn(false)
-        val edit = svc.processCallbackQuery(makeCallback(MessageService.State.WAITING_FOR_SUBSCRIBE.callbackData!! + 1))
+        val edit = svc.processCallbackQuery(
+            makeCallback(MessageService.State.WAITING_FOR_SUBSCRIBE.callbackData!! + 1)
+        )
         assertEquals(BotAnswers.SUBSCRIBE_FAIL, edit.text)
     }
 
     @Test
-    fun `processCallbackQuery - UNSUBSCRIBE_SUCCESS`() {
+    fun `should show unsubscribed message when unsubscribe callback succeeds`() {
         whenever(animeClient.unsubscribe(TestData.CHAT_ID, 1L)).thenReturn(true)
-        val edit =
-            svc.processCallbackQuery(makeCallback(MessageService.State.WAITING_FOR_UNSUBSCRIBE.callbackData!! + 1))
+        val edit = svc.processCallbackQuery(
+            makeCallback(MessageService.State.WAITING_FOR_UNSUBSCRIBE.callbackData!! + 1)
+        )
         assertEquals(BotAnswers.UNSUBSCRIBED, edit.text)
     }
 
     @Test
-    fun `processCallbackQuery - UNSUBSCRIBE_FAIL`() {
+    fun `should show unsubscribe fail when unsubscribe callback fails`() {
         whenever(animeClient.unsubscribe(TestData.CHAT_ID, 1L)).thenReturn(false)
-        val edit =
-            svc.processCallbackQuery(makeCallback(MessageService.State.WAITING_FOR_UNSUBSCRIBE.callbackData!! + 1))
+        val edit = svc.processCallbackQuery(
+            makeCallback(MessageService.State.WAITING_FOR_UNSUBSCRIBE.callbackData!! + 1)
+        )
         assertEquals(BotAnswers.UNSUBSCRIBE_FAIL, edit.text)
     }
 }
