@@ -103,7 +103,6 @@ class AnimeController @Autowired constructor(
 
     /** Рекомендации для пользователя */
     @GetMapping("/recommendations/{chatId}")
-    fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<List<AnimeNameDto>> =
-        TODO("Реализовать aiRecommendationService")
-        //ResponseEntity.ok(aiRecommendationService.getRecommendations(chatId, additionalText))
+    suspend fun getRecommendations(@PathVariable chatId: Long, additionalText: String = ""): ResponseEntity<String> =
+        ResponseEntity.ok(aiRecommendationService.getRecommendations(chatId, additionalText))
 }

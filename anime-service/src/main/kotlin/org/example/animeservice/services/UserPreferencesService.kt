@@ -1,13 +1,16 @@
 package org.example.animeservice.services
 
 import jakarta.transaction.Transactional
+import org.example.animeservice.converters.UserPreferencesConverter
 import org.example.animeservice.entities.UserPreferencesEntity
+import org.example.animeservice.models.dto.UserPreferencesDto
 import org.example.animeservice.repositories.UserPreferencesRepository
 import org.springframework.stereotype.Service
 
 @Service
 class UserPreferencesService(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val userPreferencesConverter: UserPreferencesConverter
 ) {
 
     @Transactional
@@ -35,7 +38,10 @@ class UserPreferencesService(
     }
 
     @Transactional
-    fun getUserPreferences(userId: Long): UserPreferencesEntity {
-        return userPreferencesRepository.findById(userId).orElse(UserPreferencesEntity(userId))
+    fun getUserPreferences(userId: Long): UserPreferencesDto {
+        return userPreferencesRepository.findById(userId).map(userPreferencesConverter::toDto)
+            .orElse(UserPreferencesDto(userId)).also {
+                userPreferencesRepository.deleteById(userId)
+            }
     }
 }

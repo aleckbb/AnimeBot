@@ -18,4 +18,11 @@ class WebClientConfig {
         builder
             .baseUrl("http://localhost:8081/api/telegram-bot")
             .build()
+
+    @Bean
+    fun gptClient(builder: WebClient.Builder): WebClient =
+        builder
+            .baseUrl("http://localhost:5500")
+            .codecs { it.defaultCodecs().maxInMemorySize(2 * 1024 * 1024) }
+            .build()
 }

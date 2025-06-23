@@ -20,3 +20,9 @@ services:
       --password=postgres
       --changeLogFile=changelog/master.yml
       update
+
+  free-gpt4:
+    image: d0ckmg/free-gpt4-web-api:latest
+    ports:
+      - "5500:5500"
+    restart: unless-stopped

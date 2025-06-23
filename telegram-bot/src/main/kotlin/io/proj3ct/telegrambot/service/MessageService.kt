@@ -140,12 +140,8 @@ class MessageService(private val animeService: AnimeControllerClient) {
             State.WAITING_FOR_ADDITIONS -> {
                 userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
                 val recs = animeService.getRecommendations(chatId, text)
-                    .also { logger.info("getRecommendations(chat=$chatId, add='$text') -> ${it.size} items") }
-                createMessageWithAnimeButtons(
-                    recs.map { it.toAnimeNameDto() },
-                    chatId,
-                    State.WAITING_FOR_DETAILS.callbackData
-                )
+                    .also { logger.info("getRecommendations(chat=$chatId, add='$text') -> \n$it") }
+                createMessage(chatId, recs)
             }
 
             else -> handleCommand(chatId, "")
