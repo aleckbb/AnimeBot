@@ -23,7 +23,7 @@ class MessageService(private val animeService: AnimeControllerClient) {
     private val logger = LoggerFactory.getLogger(MessageService::class.java)
     private val userStates = ConcurrentHashMap<Long, State>()
 
-    private enum class State(val callbackData: String? = null) {
+    enum class State(val callbackData: String? = null) {
         IDLE,
         WAITING_FOR_DETAILS("DETAILS"),
         WAITING_FOR_SUBSCRIBE("SUBSCRIBE"),

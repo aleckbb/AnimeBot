@@ -25,6 +25,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.telegram:telegrambots:6.3.0")
 
     // Telegram Bot Starter
     implementation("org.telegram:telegrambots-spring-boot-starter:6.3.0")
@@ -37,9 +40,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
-    // (необязательно) если планируете писать корутинный WebClient:
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-
 }
 
 kotlin {
