@@ -16,12 +16,12 @@ object AnimeMother {
             status = "Finished",
             episodes = 64,
             episodesAired = 64,
-            airedOn = CommonData.LOCAL_DATE,
-            releasedOn = CommonData.LOCAL_DATE,
+            airedOn = TestData.LOCAL_DATE,
+            releasedOn = TestData.LOCAL_DATE,
             rating = "PG-13",
             duration = 24,
             description = "Братья Элрик нарушили священный закон и заплатили за это самым дорогим...",
-            nextEpisodeAt = CommonData.LOCAL_DATE_TIME,
+            nextEpisodeAt = TestData.LOCAL_DATE_TIME,
             genres = listOf("Action", "Adventure", "Drama", "Fantasy"),
             studios = listOf("Bones")
         )

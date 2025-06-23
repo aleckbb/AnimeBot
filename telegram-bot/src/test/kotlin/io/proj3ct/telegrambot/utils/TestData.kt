@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-object CommonData {
+object TestData {
 
     const val CHAT_ID = 1L
     const val MESSAGE_ID = 1
