@@ -52,9 +52,7 @@ class TelegramBot : TelegramLongPollingBot() {
 
     fun notifyUsersAboutNewEpisodes(userEpisodes: List<UsersAnimeWithNewEpisodesDto>) {
         userEpisodes.forEach { ue ->
-            val text = if (ue.animeTitles.isEmpty()) {
-                "Нет новых серий"
-            } else buildString {
+            val text = buildString {
                 append("Новые серии для следующих аниме:\n")
                 ue.animeTitles.forEach { anime ->
                     append("• ${anime}\n")
