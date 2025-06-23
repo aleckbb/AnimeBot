@@ -94,10 +94,8 @@ class MessageService(private val animeService: AnimeControllerClient) {
                 val answer = data.removePrefix(State.WAITING_FOR_ADDITIONS.callbackData)
                 if (answer == "Нет") {
                     val recs = animeService.getRecommendations(chatId)
-                        .also { logger.info("getRecommendations(chat=$chatId) -> ${it.size} items") }
-                    val buttons =
-                        animeToButtons(recs.map { it.toAnimeNameDto() }, State.WAITING_FOR_DETAILS.callbackData)
-                    createEditMessageText(callbackQuery, "Вот список рекомендаций", InlineKeyboardMarkup(buttons))
+                        .also { logger.info("getRecommendations(chat=$chatId) -> \n$it") }
+                    createEditMessageText(callbackQuery, recs)
                 } else {
                     userStates[chatId] =
                         State.WAITING_FOR_ADDITIONS.also { logger.info("State -> $it for chat $chatId") }
