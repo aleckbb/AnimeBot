@@ -17,34 +17,34 @@ import org.springframework.http.MediaType
 import kotlin.test.assertEquals
 
 @SpringBootTest(
-  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-  properties = ["spring.main.allow-bean-definition-overriding=true"]
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = ["spring.main.allow-bean-definition-overriding=true"]
 )
 class BotNotifyingControllerIntegrationTest {
 
-  @LocalServerPort
-  private var port: Int = 0
+    @LocalServerPort
+    private var port: Int = 0
 
-  @Autowired
-  private lateinit var rest: TestRestTemplate
+    @Autowired
+    private lateinit var rest: TestRestTemplate
 
-  @MockBean
-  private lateinit var telegramBot: TelegramBot
+    @MockBean
+    private lateinit var telegramBot: TelegramBot
 
-  @Test
-  fun `should return 204 and invoke telegramBot when posting new episodes`() {
-    val dto = UsersAnimeWithNewEpisodesDto(
-      userId = 42L,
-      animeTitles = listOf(AnimeMother.getAnimeNameDto().name)
-    )
-    val url = "http://localhost:$port/api/telegram-bot/notify-new-episodes"
-    val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
-    val req = HttpEntity(listOf(dto), headers)
+    @Test
+    fun `should return 204 and invoke telegramBot when posting new episodes`() {
+        val dto = UsersAnimeWithNewEpisodesDto(
+            userId = 42L,
+            animeTitles = listOf(AnimeMother.getAnimeNameDto().name)
+        )
+        val url = "http://localhost:$port/api/telegram-bot/notify-new-episodes"
+        val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
+        val req = HttpEntity(listOf(dto), headers)
 
-    val resp = rest.postForEntity(url, req, Void::class.java)
+        val resp = rest.postForEntity(url, req, Void::class.java)
 
-    assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
+        assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
 
-    verify(telegramBot).notifyUsersAboutNewEpisodes(listOf(dto))
-  }
+        verify(telegramBot).notifyUsersAboutNewEpisodes(listOf(dto))
+    }
 }
