@@ -117,6 +117,11 @@ class MessageService(private val animeService: AnimeControllerClient) {
         logger.info("[MSG] Got message: chat=$chatId, text=$text")
         logger.info("processMessage: state=$state...")
 
+        if (text.startsWith("/")) {
+            userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
+            return handleCommand(chatId, text)
+        }
+
         return when (state) {
             State.IDLE -> handleCommand(chatId, text)
 
