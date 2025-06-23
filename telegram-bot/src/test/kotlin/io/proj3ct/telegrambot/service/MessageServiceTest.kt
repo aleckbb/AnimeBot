@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 
 class MessageServiceTest @Autowired constructor(
     private val svc: MessageService
-): AbstractTest() {
+) : AbstractTest() {
 
     @MockBean
     private lateinit var animeClient: AnimeControllerClient

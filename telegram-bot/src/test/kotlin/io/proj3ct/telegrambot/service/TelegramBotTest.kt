@@ -1,8 +1,8 @@
 package io.proj3ct.telegrambot.service
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mockito.*
@@ -11,8 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Message
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
