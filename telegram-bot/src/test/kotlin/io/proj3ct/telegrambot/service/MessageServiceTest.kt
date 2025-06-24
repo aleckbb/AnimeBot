@@ -1,9 +1,9 @@
 package io.proj3ct.telegrambot.service
 
+import io.proj3ct.anime.dto.mother.AnimeMother
 import io.proj3ct.telegrambot.AbstractTest
 import io.proj3ct.telegrambot.clients.animeclient.AnimeControllerClient
 import io.proj3ct.telegrambot.mapper.toFullStringInfo
-import io.proj3ct.telegrambot.utils.AnimeMother
 import io.proj3ct.telegrambot.utils.BotAnswers
 import io.proj3ct.telegrambot.utils.MessageMother
 import io.proj3ct.telegrambot.utils.TestData

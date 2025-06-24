@@ -1,8 +1,8 @@
 package io.proj3ct.telegrambot.controller
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
+import io.proj3ct.anime.dto.mother.AnimeMother
 import io.proj3ct.telegrambot.service.TelegramBot
-import io.proj3ct.telegrambot.utils.AnimeMother
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
