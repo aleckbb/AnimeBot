@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-internal class AnimeServiceTest {
+class AnimeServiceUnitTest {
 
     @Mock
     private lateinit var provider: AnimeProvider
