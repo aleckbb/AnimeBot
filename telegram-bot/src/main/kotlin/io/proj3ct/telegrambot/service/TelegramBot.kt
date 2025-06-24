@@ -2,12 +2,15 @@ package io.proj3ct.telegrambot.service
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import io.proj3ct.telegrambot.config.BotProperties
+import io.proj3ct.telegrambot.events.RecommendationsReadyEvent
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault
@@ -66,6 +69,22 @@ class TelegramBot : TelegramLongPollingBot() {
                 logger.error("Не удалось отправить уведомление chat=${ue.userId}", e)
             }
         }
+    }
+
+    @EventListener
+    fun onRecommendationsReady(event: RecommendationsReadyEvent) {
+        val text = if (event.recommendations.isEmpty()) {
+            "Нет рекомендаций"
+        } else { event.recommendations
+        }
+        val edit = EditMessageText()
+            .apply {
+                chatId    = event.callbackQuery.message.chatId.toString()
+                messageId = event.callbackQuery.message.messageId
+                this.text = text
+            }
+
+        execute(edit)
     }
 
     enum class Commands(val command: String, val description: String) {

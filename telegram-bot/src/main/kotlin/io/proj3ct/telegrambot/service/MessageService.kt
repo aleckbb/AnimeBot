@@ -2,11 +2,15 @@ package io.proj3ct.telegrambot.service
 
 import io.proj3ct.anime.dto.AnimeNameDto
 import io.proj3ct.telegrambot.clients.animeclient.AnimeControllerClient
-import io.proj3ct.telegrambot.mapper.toAnimeNameDto
+import io.proj3ct.telegrambot.events.RecommendationsReadyEvent
 import io.proj3ct.telegrambot.mapper.toFullStringInfo
 import io.proj3ct.telegrambot.service.TelegramBot.Commands
 import io.proj3ct.telegrambot.utils.BotAnswers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
@@ -18,7 +22,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class MessageService(private val animeService: AnimeControllerClient) {
+class MessageService(
+    private val animeService: AnimeControllerClient,
+    private val publisher: ApplicationEventPublisher
+) {
 
     private val logger = LoggerFactory.getLogger(MessageService::class.java)
     private val userStates = ConcurrentHashMap<Long, State>()
@@ -93,9 +100,14 @@ class MessageService(private val animeService: AnimeControllerClient) {
             data.startsWith(State.WAITING_FOR_ADDITIONS.callbackData!!) -> {
                 val answer = data.removePrefix(State.WAITING_FOR_ADDITIONS.callbackData)
                 if (answer == "Нет") {
-                    val recs = animeService.getRecommendations(chatId)
-                        .also { logger.info("getRecommendations(chat=$chatId) -> \n$it") }
-                    createEditMessageText(callbackQuery, recs)
+                    val thinking = createEditMessageText(callbackQuery, "Думаю…")
+                    GlobalScope.launch {
+                        val recs = animeService.getRecommendations(chatId)
+                        publisher.publishEvent(
+                            RecommendationsReadyEvent(callbackQuery, recs)
+                        )
+                    }
+                    thinking
                 } else {
                     userStates[chatId] =
                         State.WAITING_FOR_ADDITIONS.also { logger.info("State -> $it for chat $chatId") }
