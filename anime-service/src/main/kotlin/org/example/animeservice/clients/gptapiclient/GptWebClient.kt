@@ -16,7 +16,7 @@ class GptWebClient(
 ) {
 
     suspend fun ask(question: String): String {
-        return withTimeout(20_000) {
+        return withTimeout(40_000) {
             gptClient.get()
                 .uri { uriBuilder -> uriBuilder.queryParam("text", question).build() }
                 .retrieve()

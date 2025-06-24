@@ -3,6 +3,7 @@ package io.proj3ct.telegrambot.service
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import io.proj3ct.telegrambot.config.BotProperties
 import io.proj3ct.telegrambot.events.RecommendationsReadyEvent
+import io.proj3ct.telegrambot.utils.BotAnswers
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
@@ -81,7 +82,7 @@ class TelegramBot : TelegramLongPollingBot() {
             .apply {
                 chatId    = event.callbackQuery.message.chatId.toString()
                 messageId = event.callbackQuery.message.messageId
-                this.text = text
+                this.text = BotAnswers.RECOMMENDATIONS_INTRO_MESSAGE + text
             }
 
         execute(edit)
