@@ -18,7 +18,7 @@ import java.math.BigDecimal
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-internal class AnimeInfoComponentUnitTest {
+class AnimeInfoComponentUnitTest {
 
     @Mock
     private lateinit var client: ShikimoriWebClient
