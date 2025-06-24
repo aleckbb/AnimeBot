@@ -1,9 +1,8 @@
 // src/test/kotlin/org/example/animeservice/service/TelegramBotComponentTest.kt
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import org.example.animeservice.clients.telegrambotclient.TelegramBotWebClient
-import org.example.animeservice.services.TelegramBotComponent
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks

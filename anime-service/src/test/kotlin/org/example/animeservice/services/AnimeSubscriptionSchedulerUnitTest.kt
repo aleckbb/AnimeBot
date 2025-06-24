@@ -1,12 +1,8 @@
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.UsersAnimeWithNewEpisodesDto
 import kotlinx.coroutines.runBlocking
 import org.example.animeservice.repositories.projections.AnimeUserIds
-import org.example.animeservice.services.AnimeInfoComponent
-import org.example.animeservice.services.AnimeService
-import org.example.animeservice.services.AnimeSubscriptionScheduler
-import org.example.animeservice.services.TelegramBotComponent
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks

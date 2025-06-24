@@ -1,13 +1,10 @@
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.AnimeNameDto
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.example.animeservice.entities.SubscriptionEntity
 import org.example.animeservice.repositories.SubscriptionRepository
-import org.example.animeservice.services.AnimeInfoComponent
-import org.example.animeservice.services.AnimeService
-import org.example.animeservice.services.SubscriptionService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks

@@ -1,11 +1,10 @@
 // src/test/kotlin/org/example/animeservice/service/UserPreferencesServiceTest.kt
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import org.example.animeservice.converters.UserPreferencesConverter
 import org.example.animeservice.entities.UserPreferencesEntity
 import org.example.animeservice.models.dto.UserPreferencesDto
 import org.example.animeservice.repositories.UserPreferencesRepository
-import org.example.animeservice.services.UserPreferencesService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
