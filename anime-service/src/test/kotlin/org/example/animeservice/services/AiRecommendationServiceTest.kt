@@ -1,9 +1,7 @@
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import kotlinx.coroutines.runBlocking
 import org.example.animeservice.clients.gptapiclient.GptWebClient
-import org.example.animeservice.services.AiRecommendationService
-import org.example.animeservice.services.UserPreferencesService
 import org.example.animeservice.utils.PreferencesMother
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

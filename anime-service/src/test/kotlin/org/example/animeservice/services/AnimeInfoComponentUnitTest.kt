@@ -1,11 +1,10 @@
-package org.example.animeservice.service
+package org.example.animeservice.services
 
 import io.proj3ct.anime.dto.mother.AnimeMother
 import kotlinx.coroutines.runBlocking
 import org.example.animeservice.clients.shikimoriapiclient.ShikimoriWebClient
 import org.example.animeservice.converters.AnimeConverter
 import org.example.animeservice.providers.AnimeProvider
-import org.example.animeservice.services.AnimeInfoComponent
 import org.example.animeservice.utils.AnimeJsonMother
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
