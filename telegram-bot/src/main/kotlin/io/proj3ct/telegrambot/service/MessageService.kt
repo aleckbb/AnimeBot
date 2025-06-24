@@ -153,7 +153,7 @@ class MessageService(
                 userStates[chatId] = State.IDLE.also { logger.info("State -> IDLE for chat $chatId") }
                 val recs = animeService.getRecommendations(chatId, text)
                     .also { logger.info("getRecommendations(chat=$chatId, add='$text') -> \n$it") }
-                createMessage(chatId, recs)
+                createMessage(chatId, BotAnswers.RECOMMENDATIONS_INTRO_MESSAGE + recs)
             }
 
             else -> handleCommand(chatId, "")
